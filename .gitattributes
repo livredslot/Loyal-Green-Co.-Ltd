@@ -1,0 +1,4 @@
+# Keep Linux line endings: the code runs on a Linux server.
+* text=auto eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf

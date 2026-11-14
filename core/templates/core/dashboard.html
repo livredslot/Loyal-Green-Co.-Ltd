@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · Loyal Green{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+<p class="muted">Sales, stock and alerts will appear here as each part of the system is built.</p>
+
+<h2>Version 1 modules</h2>
+<ol class="modules">
+  {% for name, description in modules %}
+  <li class="card"><strong>{{ name }}</strong><span class="muted">{{ description }}</span><span class="badge">Coming</span></li>
+  {% endfor %}
+</ol>
+
+<p class="muted small"><a href="{% url 'password_change' %}">Change your password</a></p>
+{% endblock %}

@@ -1,0 +1,63 @@
+/* Loyal Green – plain, readable, works on phone and laptop. */
+:root {
+  --ink: #1f2933;
+  --muted: #616e7c;
+  --line: #d9dee3;
+  --bg: #f5f7f6;
+  --card: #ffffff;
+  --brand: #2f7d4f;
+  --brand-dark: #23603c;
+  --error: #b42318;
+  --ok: #1b7a43;
+  font-family: "Segoe UI", "Myanmar Text", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-size: 15px; line-height: 1.5; }
+a { color: var(--brand-dark); }
+h1 { font-size: 24px; margin: 0 0 4px; }
+h2 { font-size: 18px; margin: 28px 0 12px; }
+
+.topbar {
+  display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+  padding: 10px 20px; background: var(--brand); color: #fff;
+}
+.topbar a { color: #fff; text-decoration: none; }
+.brand { font-weight: 600; font-size: 17px; }
+.nav { display: flex; gap: 16px; flex: 1; }
+.user { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+.user form { margin: 0; }
+button.link { background: none; border: 0; color: #fff; text-decoration: underline; cursor: pointer; font: inherit; padding: 0; }
+
+.page { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+.narrow { max-width: 420px; }
+
+.modules { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.modules li { display: flex; flex-direction: column; gap: 4px; }
+.badge { align-self: flex-start; margin-top: 6px; font-size: 12px; padding: 2px 8px; border-radius: 10px; background: #eef2ee; color: var(--muted); }
+
+.msg { padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; border: 1px solid var(--line); background: #fff; }
+.msg-error { border-color: #f1b4ae; background: #fdf1f0; color: var(--error); }
+.msg-success { border-color: #a8d5b9; background: #eff8f2; color: var(--ok); }
+
+.login { max-width: 360px; margin: 10vh auto 0; }
+.login h1 { color: var(--brand-dark); }
+.login .card, .card.narrow { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+label { font-size: 14px; font-weight: 600; }
+input[type=text], input[type=password], input[type=email], input[type=number], select, textarea {
+  width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 6px; font: inherit; background: #fff;
+}
+button.primary {
+  margin-top: 8px; padding: 10px 14px; border: 0; border-radius: 6px;
+  background: var(--brand); color: #fff; font: inherit; font-weight: 600; cursor: pointer;
+}
+button.primary:hover { background: var(--brand-dark); }
+
+@media (max-width: 600px) {
+  .topbar { gap: 8px 16px; }
+  .user { width: 100%; justify-content: space-between; }
+}

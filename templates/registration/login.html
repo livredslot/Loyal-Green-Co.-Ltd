@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Log in · Loyal Green{% endblock %}
+{% block content %}
+<div class="login">
+  <h1>Loyal Green</h1>
+  <p class="muted">Factory system</p>
+  <form method="post" class="card">
+    {% csrf_token %}
+    {% if form.errors %}<div class="msg msg-error">Wrong username or password.</div>{% endif %}
+    <label for="id_username">Username</label>
+    <input type="text" name="username" id="id_username" autocomplete="username" autofocus required>
+    <label for="id_password">Password</label>
+    <input type="password" name="password" id="id_password" autocomplete="current-password" required>
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" class="primary">Log in</button>
+  </form>
+</div>
+{% endblock %}
