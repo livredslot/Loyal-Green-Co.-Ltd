@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Items · Loyal Green{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Items</h1>
+  <div class="actions">
+    <a href="{% url 'setup_lists' %}">Locations and machines</a>
+    {% if perms.inventory.add_item %}<a class="button" href="{% url 'item_create' %}">New item</a>{% endif %}
+  </div>
+</div>
+
+<form method="get" class="filters">
+  <input type="text" name="q" value="{{ q }}" placeholder="Search code, name or barcode">
+  <select name="type">
+    <option value="">All types</option>
+    {% for value, label in types %}<option value="{{ value }}"{% if value == item_type %} selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+  <select name="category">
+    <option value="">All categories</option>
+    {% for c in categories %}<option value="{{ c.pk }}"{% if c.pk|stringformat:"s" == category %} selected{% endif %}>{{ c.name }}</option>{% endfor %}
+  </select>
+  <label class="inline"><input type="checkbox" name="inactive" value="1"{% if show_inactive %} checked{% endif %}> Show inactive</label>
+  <button type="submit">Filter</button>
+</form>
+
+<p class="muted small">{{ items|length }} item{{ items|length|pluralize }}</p>
+<div class="table-wrap">
+<table class="list">
+  <thead>
+    <tr><th>Code</th><th>Name</th><th>Type</th><th>Category</th><th>Brand</th><th>Stock unit</th><th class="num">Pcs/pkt</th><th class="num">Pkt/ctn</th></tr>
+  </thead>
+  <tbody>
+    {% for item in items %}
+    <tr{% if not item.is_active %} class="inactive"{% endif %}>
+      <td><a href="{{ item.get_absolute_url }}"><strong>{{ item.code }}</strong></a></td>
+      <td>{{ item.name_en }}{% if item.name_mm %}<br><span class="muted mm">{{ item.name_mm }}</span>{% endif %}</td>
+      <td><span class="tag tag-{{ item.type|lower }}">{{ item.type }}</span></td>
+      <td>{{ item.category }}</td>
+      <td>{{ item.brand }}</td>
+      <td>{{ item.stock_unit }}</td>
+      <td class="num">{{ item.pcs_per_pkt|default_if_none:""|intcomma }}</td>
+      <td class="num">{{ item.pkt_per_ctn|default_if_none:""|intcomma }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="8" class="muted">No items found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

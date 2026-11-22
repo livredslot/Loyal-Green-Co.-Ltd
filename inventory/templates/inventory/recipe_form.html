@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Recipe {{ item.code }} · Loyal Green{% endblock %}
+{% block content %}
+<p class="small"><a href="{{ item.get_absolute_url }}">← {{ item.code }}</a></p>
+<h1>Recipe for {{ item.code }}</h1>
+<p class="lead">{{ item.name_en }}</p>
+<form method="post">
+  {% csrf_token %}
+  <div class="card form-grid">
+    {% for error in form.non_field_errors %}<div class="msg msg-error">{{ error }}</div>{% endfor %}
+    {% for field in form %}{% include "_field.html" %}{% endfor %}
+  </div>
+
+  <h2>Materials per batch</h2>
+  <p class="muted small">Enter what one batch uses, in the unit you measure it in (for example 2,000 pcs of fans per carton). The system converts it to the stock unit.</p>
+  {{ formset.management_form }}
+  {% for error in formset.non_form_errors %}<div class="msg msg-error">{{ error }}</div>{% endfor %}
+  <div class="table-wrap">
+  <table class="list form-table">
+    <thead><tr><th>Material</th><th>Quantity</th><th>Unit</th><th>Normal waste %</th><th>Remove</th></tr></thead>
+    <tbody>
+      {% for f in formset %}
+      <tr>
+        <td>{{ f.id }}{{ f.material }}{% for e in f.material.errors %}<small class="error">{{ e }}</small>{% endfor %}</td>
+        <td>{{ f.quantity }}{% for e in f.quantity.errors %}<small class="error">{{ e }}</small>{% endfor %}</td>
+        <td>{{ f.unit }}{% for e in f.unit.errors %}<small class="error">{{ e }}</small>{% endfor %}</td>
+        <td>{{ f.waste_percent }}</td>
+        <td>{% if f.instance.pk %}{{ f.DELETE }}{% endif %}</td>
+      </tr>
+      {% for e in f.non_field_errors %}<tr><td colspan="5"><small class="error">{{ e }}</small></td></tr>{% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  <p class="muted small">Need more rows? Save, then edit again: three empty rows are added each time.</p>
+  <div class="form-actions"><button type="submit" class="primary">Save recipe</button></div>
+</form>
+{% endblock %}

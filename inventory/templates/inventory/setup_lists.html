@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Locations and machines · Loyal Green{% endblock %}
+{% block content %}
+<p class="small"><a href="{% url 'item_list' %}">← Items</a></p>
+<h1>Locations and machines</h1>
+{% if user.is_staff %}<p class="muted small">To add or change these, use <a href="{% url 'admin:index' %}">Setup</a>.</p>{% endif %}
+
+<div class="grid-2">
+  <section class="card">
+    <h2>Stock locations</h2>
+    <ul class="plain">{% for l in locations %}<li><strong>{{ l.code }}</strong> {{ l.name }}{% if not l.is_active %} <span class="tag">Inactive</span>{% endif %}</li>{% endfor %}</ul>
+  </section>
+  <section class="card">
+    <h2>Categories</h2>
+    <p>{% for c in categories %}{{ c.name }}{% if not forloop.last %} · {% endif %}{% empty %}<span class="muted">None yet.</span>{% endfor %}</p>
+  </section>
+</div>
+
+<section class="card">
+  <h2>Machines</h2>
+  <div class="table-wrap">
+  <table class="list">
+    <thead><tr><th>Machine</th><th class="num">Output per hour</th><th class="num">Operators</th><th class="num">Hours per shift</th><th>Notes</th></tr></thead>
+    <tbody>
+      {% for m in machines %}
+      <tr{% if not m.is_active %} class="inactive"{% endif %}><td>{{ m.name }}</td><td class="num">{{ m.output_per_hour|default_if_none:"–"|intcomma }}</td><td class="num">{{ m.operators }}</td><td class="num">{{ m.hours_per_shift|floatformat:"-1" }}</td><td>{{ m.notes }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+{% endblock %}

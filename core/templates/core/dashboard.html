@@ -6,8 +6,12 @@
 
 <h2>Version 1 modules</h2>
 <ol class="modules">
-  {% for name, description in modules %}
-  <li class="card"><strong>{{ name }}</strong><span class="muted">{{ description }}</span><span class="badge">Coming</span></li>
+  {% for name, description, url in modules %}
+  <li class="card">
+    <strong>{% if url %}<a href="{{ url }}">{{ name }}</a>{% else %}{{ name }}{% endif %}</strong>
+    <span class="muted">{{ description }}</span>
+    <span class="badge{% if url %} badge-ready{% endif %}">{% if url %}Ready{% else %}Coming{% endif %}</span>
+  </li>
   {% endfor %}
 </ol>
 

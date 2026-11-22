@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}{{ item.code }} · Loyal Green{% endblock %}
+{% block content %}
+<p class="small"><a href="{% url 'item_list' %}">← Items</a></p>
+<div class="page-head">
+  <div>
+    <h1>{{ item.code }} <span class="tag tag-{{ item.type|lower }}">{{ item.get_type_display }}</span>{% if not item.is_active %} <span class="tag">Inactive</span>{% endif %}</h1>
+    <p class="lead">{{ item.name_en }}{% if item.name_mm %} · <span class="mm">{{ item.name_mm }}</span>{% endif %}</p>
+  </div>
+  <div class="actions">
+    {% if perms.inventory.change_item %}<a class="button" href="{% url 'item_edit' item.pk %}">Edit</a>{% endif %}
+  </div>
+</div>
+
+<div class="grid-2">
+  <section class="card">
+    <h2>Details</h2>
+    <dl class="facts">
+      <dt>Category</dt><dd>{{ item.category }}</dd>
+      <dt>Brand</dt><dd>{{ item.brand|default:"–" }}</dd>
+      <dt>Stock unit</dt><dd>{{ item.stock_unit }}</dd>
+      <dt>Barcode</dt><dd>{{ item.barcode|default:"–" }}</dd>
+      {% if item.type == "RM" or item.type == "PK" %}
+      <dt>Lead time</dt><dd>{% if item.lead_time_weeks %}{{ item.lead_time_weeks }} weeks{% else %}–{% endif %}</dd>
+      <dt>Extra stock</dt><dd>{% if item.safety_stock_weeks %}{{ item.safety_stock_weeks }} weeks{% else %}–{% endif %}</dd>
+      {% endif %}
+    </dl>
+    {% if item.notes %}<p class="muted">{{ item.notes|linebreaksbr }}</p>{% endif %}
+  </section>
+
+  <section class="card">
+    <h2>Units</h2>
+    <ul class="plain">
+      {% if item.pcs_per_ctn %}<li>1 ctn = {{ item.pkt_per_ctn|intcomma }} pkt = {{ item.pcs_per_ctn|intcomma }} pcs</li>
+      {% elif item.pkt_per_ctn %}<li>1 ctn = {{ item.pkt_per_ctn|intcomma }} pkt</li>{% endif %}
+      {% if item.pcs_per_pkt %}<li>1 pkt = {{ item.pcs_per_pkt|intcomma }} pcs</li>{% endif %}
+      {% if item.pcs_per_kg %}<li>100 pcs weigh {{ item.weight_per_100_g|floatformat:"-2" }} g, so 1 kg ≈ {{ item.pcs_per_kg|floatformat:0|intcomma }} pcs</li>{% endif %}
+      {% if not item.pcs_per_pkt and not item.pkt_per_ctn and not item.pcs_per_kg %}<li class="muted">No pack sizes yet. Stock is counted in {{ item.stock_unit }} only.</li>{% endif %}
+    </ul>
+  </section>
+</div>
+
+{% if item.type == "FG" or item.type == "TG" %}
+<section class="card">
+  <div class="section-head">
+    <h2>Recipe</h2>
+    {% if perms.inventory.change_recipe %}<a href="{% url 'recipe_edit' item.pk %}">{% if recipe %}Edit recipe{% else %}Add recipe{% endif %}</a>{% endif %}
+  </div>
+  {% if recipe %}
+    <p>One batch makes <strong>{{ recipe.output_qty|floatformat:"-2" }} {{ recipe.output_unit }}</strong>{% if recipe.machine %} on <strong>{{ recipe.machine }}</strong>{% endif %}.</p>
+    <div class="table-wrap">
+    <table class="list">
+      <thead><tr><th>Material</th><th class="num">Quantity</th><th class="num">Normal waste</th><th class="num">Taken from stock</th></tr></thead>
+      <tbody>
+        {% for line, stock_qty in lines %}
+        <tr>
+          <td><a href="{{ line.material.get_absolute_url }}">{{ line.material.code }}</a> {{ line.material.name_en }}</td>
+          <td class="num">{{ line.quantity|floatformat:"-3"|intcomma }} {{ line.unit }}</td>
+          <td class="num">{{ line.waste_percent|floatformat:"-2" }}%</td>
+          <td class="num">{% if stock_qty is not None %}{{ stock_qty|floatformat:"-3"|intcomma }} {{ line.material.stock_unit }}{% else %}<span class="error">pack size missing</span>{% endif %}</td>
+        </tr>
+        {% empty %}<tr><td colspan="4" class="muted">No materials yet.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+    </div>
+  {% else %}
+    <p class="muted">No recipe yet.{% if item.type == "FG" %} It is needed to work out what each batch uses and costs.{% endif %}</p>
+  {% endif %}
+</section>
+{% endif %}
+
+{% if used_in %}
+<section class="card">
+  <h2>Used in</h2>
+  <ul class="plain">
+    {% for line in used_in %}<li><a href="{{ line.recipe.item.get_absolute_url }}">{{ line.recipe.item.code }}</a> {{ line.recipe.item.name_en }}: {{ line.quantity|floatformat:"-3"|intcomma }} {{ line.unit }} per {{ line.recipe.output_qty|floatformat:"-2" }} {{ line.recipe.output_unit }}</li>{% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>Change history</h2>
+  <ul class="plain small">
+    {% for h in history %}<li>{{ h.history_date|date:"j M Y H:i" }} · {{ h.get_history_type_display }} by {{ h.history_user|default:"system" }}</li>{% endfor %}
+  </ul>
+</section>
+{% endblock %}
