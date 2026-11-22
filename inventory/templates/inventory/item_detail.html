@@ -79,6 +79,23 @@
 </section>
 {% endif %}
 
+{% if perms.sales.view_price and item.prices.exists %}
+<section class="card">
+  <h2>Selling prices</h2>
+  <p class="muted small">Kyats before 5% Commercial Tax. Older rows are the price history.</p>
+  <div class="table-wrap">
+  <table class="list">
+    <thead><tr><th>For</th><th class="num">Price</th><th class="num">From qty</th><th>Valid</th></tr></thead>
+    <tbody>
+      {% for p in item.prices.all %}
+      <tr><td>{% if p.customer %}<a href="{{ p.customer.get_absolute_url }}">{{ p.customer }}</a> (special){% else %}{{ p.price_group }}{% endif %}</td><td class="num">{{ p.price|intcomma }} / {{ p.unit }}</td><td class="num">{{ p.min_qty }}</td><td>{{ p.valid_from|date:"j M Y" }} – {{ p.valid_to|date:"j M Y"|default:"open" }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+{% endif %}
+
 <section class="card">
   <h2>Change history</h2>
   <ul class="plain small">

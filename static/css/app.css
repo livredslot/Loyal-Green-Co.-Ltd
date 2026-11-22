@@ -81,6 +81,8 @@ table.list th, table.list td { padding: 8px 10px; border-bottom: 1px solid var(-
 table.list th { font-size: 13px; color: var(--muted); background: #fafbfa; white-space: nowrap; }
 table.list .num { text-align: right; white-space: nowrap; }
 table.list tr.inactive td { color: var(--muted); }
+table.list tr.group-row td { background: #f3f6f4; font-weight: 600; font-size: 13px; color: var(--brand-dark); }
+.form-table input[type=number] { max-width: 140px; }
 
 .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 7px; border-radius: 10px; background: #eef0f2; color: var(--muted); vertical-align: middle; }
 .tag-fg { background: #e3f3e8; color: var(--ok); }

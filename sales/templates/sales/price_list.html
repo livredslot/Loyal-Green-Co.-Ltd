@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Price list · Loyal Green{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Price list</h1>
+    <p class="muted">Price per packet in kyats, before 5% Commercial Tax. A carton costs the packet price × packets per carton unless a carton price is set.</p>
+  </div>
+</div>
+
+<form method="get" class="filters">
+  <select name="category">
+    <option value="">All categories</option>
+    {% for c in categories %}<option value="{{ c.pk }}"{% if c.pk|stringformat:"s" == category %} selected{% endif %}>{{ c.name }}</option>{% endfor %}
+  </select>
+  <button type="submit">Filter</button>
+  {% if perms.sales.change_price %}
+  <span class="muted small">Edit prices for:</span>
+  {% for g in groups %}<a href="{% url 'price_group_edit' g.pk %}{% if category %}?category={{ category }}{% endif %}">{{ g.name }}</a>{% endfor %}
+  {% endif %}
+</form>
+{% if missing %}<p class="small"><span class="error" style="display:inline">{{ missing }} item{{ missing|pluralize }}</span> <span class="muted">have no price yet.</span></p>{% endif %}
+
+<div class="table-wrap">
+<table class="list">
+  <thead>
+    <tr><th>Item</th><th class="num">Pkt/ctn</th>{% for g in groups %}<th class="num">{{ g.name }}</th>{% endfor %}</tr>
+  </thead>
+  <tbody>
+    {% for item, prices in rows %}
+    {% ifchanged item.category %}<tr class="group-row"><td colspan="{{ groups|length|add:2 }}">{{ item.category }}</td></tr>{% endifchanged %}
+    <tr>
+      <td><a href="{{ item.get_absolute_url }}">{{ item.code }}</a> {{ item.name_en }}</td>
+      <td class="num">{{ item.pkt_per_ctn|default_if_none:"–" }}</td>
+      {% for p in prices %}<td class="num">{% if p %}{{ p.price|intcomma }}{% else %}<span class="muted">–</span>{% endif %}</td>{% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

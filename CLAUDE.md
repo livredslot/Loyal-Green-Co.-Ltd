@@ -8,6 +8,7 @@ Custom factory/inventory/sales system for Loyal Green Co., Ltd (Myanmar, paper c
 - Tests: `<python> manage.py test`
 - Dev server: `<python> manage.py runserver` → http://127.0.0.1:8000
 - Load the confirmed item list: `<python> manage.py import_items "<file>.xlsx" --dry-run`, then without `--dry-run` (matches on Code; skips rows marked Delete)
+- Load customers, suppliers and group prices: `<python> manage.py import_sales_data "<file>.xlsx" --dry-run` (sheets Customers / Suppliers / Prices, all optional)
 - No Docker on the laptop (company machine). Docker is only for the AWS server (`docker-compose.yml`, `Caddyfile`, `.env.example`).
 
 ## Rules for this codebase
@@ -23,6 +24,7 @@ Custom factory/inventory/sales system for Loyal Green Co., Ltd (Myanmar, paper c
 ## Build order (version 1)
 
 1. Items, units, recipes, locations, users — done (`inventory` app). Units are fixed choices (pcs, pkt, ctn, kg, ton); `Item.convert()` chains pcs_per_pkt, pkt_per_ctn and weight_per_100_g. Recipes are per batch (normally 1 ctn) with per-line normal waste %.
+   Customers, suppliers and prices — done (`sales`, `purchasing` apps). Prices are per pkt before tax, for a price group or one customer; a change adds a new row from a date (history). `sales.pricing.unit_price()` picks customer special → group, highest quantity break, ctn = pkt × pkt_per_ctn. Payment terms and credit limit are editable only with `core.approve_actions`.
 2. Purchasing, goods received, import costs, stock, reorder alerts
 3. Production and repacking
 4. Sales orders, delivery orders, invoices, payments, credit alerts

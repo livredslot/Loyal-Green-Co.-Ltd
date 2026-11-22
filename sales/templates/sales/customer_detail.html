@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}{{ customer.name }} · Loyal Green{% endblock %}
+{% block content %}
+<p class="small"><a href="{% url 'customer_list' %}">← Customers</a></p>
+<div class="page-head">
+  <div>
+    <h1>{{ customer.name }}{% if not customer.is_active %} <span class="tag">Inactive</span>{% endif %}</h1>
+    <p class="lead">{{ customer.get_type_display }} · {% if customer.price_group %}{{ customer.price_group }} prices{% else %}<span class="error">no price group</span>{% endif %}</p>
+  </div>
+  <div class="actions">{% if perms.sales.change_customer %}<a class="button" href="{% url 'customer_edit' customer.pk %}">Edit</a>{% endif %}</div>
+</div>
+
+<div class="grid-2">
+  <section class="card">
+    <h2>Terms</h2>
+    <dl class="facts">
+      <dt>Payment terms</dt><dd>{{ customer.terms_label }}</dd>
+      <dt>Credit limit</dt><dd>{% if customer.credit_limit %}{{ customer.credit_limit|intcomma }} MMK{% else %}Not set yet{% endif %}</dd>
+      <dt>Salesperson</dt><dd>{{ customer.salesperson.get_full_name|default:customer.salesperson|default:"–" }}</dd>
+      <dt>Tax no.</dt><dd>{{ customer.tax_no|default:"–" }}</dd>
+    </dl>
+  </section>
+  <section class="card">
+    <h2>Contact</h2>
+    <dl class="facts">
+      <dt>Contact</dt><dd>{{ customer.contact_person|default:"–" }}</dd>
+      <dt>Phone</dt><dd>{{ customer.phone|default:"–" }}</dd>
+      <dt>Email</dt><dd>{{ customer.email|default:"–" }}</dd>
+      <dt>Billing address</dt><dd>{{ customer.billing_address|linebreaksbr|default:"–" }}</dd>
+      <dt>Delivery address</dt><dd>{{ customer.delivery_address|linebreaksbr|default:"–" }}</dd>
+    </dl>
+  </section>
+</div>
+{% if customer.notes %}<section class="card"><h2>Notes</h2><p>{{ customer.notes|linebreaksbr }}</p></section>{% endif %}
+
+{% if special_prices is not None %}
+<section class="card">
+  <div class="section-head">
+    <h2>Special prices</h2>
+    {% if perms.sales.add_price %}<a href="{% url 'special_price_add' customer.pk %}">Add special price</a>{% endif %}
+  </div>
+  <p class="muted small">These replace the {{ customer.price_group|default:"price group" }} price for this customer only. Prices are in kyats before 5% Commercial Tax.</p>
+  <div class="table-wrap">
+  <table class="list">
+    <thead><tr><th>Item</th><th class="num">Price</th><th class="num">From qty</th><th>Valid</th><th>Note</th></tr></thead>
+    <tbody>
+      {% for p in special_prices %}
+      <tr><td><a href="{{ p.item.get_absolute_url }}">{{ p.item.code }}</a> {{ p.item.name_en }}</td><td class="num">{{ p.price|intcomma }} / {{ p.unit }}</td><td class="num">{{ p.min_qty }}</td><td>{{ p.valid_from|date:"j M Y" }} – {{ p.valid_to|date:"j M Y"|default:"open" }}</td><td>{{ p.note }}</td></tr>
+      {% empty %}<tr><td colspan="5" class="muted">None.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>Change history</h2>
+  <ul class="plain small">{% for h in history %}<li>{{ h.history_date|date:"j M Y H:i" }} · {{ h.get_history_type_display }} by {{ h.history_user|default:"system" }}</li>{% endfor %}</ul>
+</section>
+{% endblock %}

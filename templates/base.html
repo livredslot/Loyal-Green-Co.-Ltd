@@ -13,6 +13,9 @@
     <nav class="nav">
       <a href="{% url 'dashboard' %}">Dashboard</a>
       {% if perms.inventory.view_item %}<a href="{% url 'item_list' %}">Items</a>{% endif %}
+      {% if perms.sales.view_customer %}<a href="{% url 'customer_list' %}">Customers</a>{% endif %}
+      {% if perms.sales.view_price %}<a href="{% url 'price_list' %}">Prices</a>{% endif %}
+      {% if perms.purchasing.view_supplier %}<a href="{% url 'supplier_list' %}">Suppliers</a>{% endif %}
       {% if user.is_staff %}<a href="{% url 'admin:index' %}">Setup</a>{% endif %}
     </nav>
     <div class="user">

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Special price · {{ customer.name }} · Loyal Green{% endblock %}
+{% block content %}
+<p class="small"><a href="{{ customer.get_absolute_url }}">← {{ customer.name }}</a></p>
+<h1>Special price for {{ customer.name }}</h1>
+<p class="muted">In kyats before 5% Commercial Tax. Leave “Valid to” empty for no end date.</p>
+<form method="post" class="card form-grid">
+  {% csrf_token %}
+  {% for error in form.non_field_errors %}<div class="msg msg-error">{{ error }}</div>{% endfor %}
+  {% for field in form %}{% include "_field.html" %}{% endfor %}
+  <div class="form-actions"><button type="submit" class="primary">Save</button></div>
+</form>
+{% endblock %}

@@ -6,6 +6,7 @@ from django.urls import reverse
 # is filled in once a module is built.
 MODULES = [
     ("Items and units", "Item list, units, recipes, locations", "item_list"),
+    ("Customers, suppliers and prices", "Customer terms, supplier list, price groups and special prices", "customer_list"),
     ("Purchasing and stock", "Purchase orders, goods received, import costs, reorder alerts", None),
     ("Production and repacking", "Daily production per machine, repacking", None),
     ("Sales", "Orders, delivery orders, invoices, payments, credit alerts", None),

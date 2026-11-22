@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Customers · Loyal Green{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Customers</h1>
+  <div class="actions">{% if perms.sales.add_customer %}<a class="button" href="{% url 'customer_create' %}">New customer</a>{% endif %}</div>
+</div>
+
+<form method="get" class="filters">
+  <input type="text" name="q" value="{{ q }}" placeholder="Search name, contact, phone or tax no.">
+  <select name="type">
+    <option value="">All types</option>
+    {% for value, label in types %}<option value="{{ value }}"{% if value == customer_type %} selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+  <select name="group">
+    <option value="">All price groups</option>
+    {% for g in groups %}<option value="{{ g.pk }}"{% if g.pk|stringformat:"s" == group %} selected{% endif %}>{{ g.name }}</option>{% endfor %}
+    <option value="none"{% if group == "none" %} selected{% endif %}>No price group</option>
+  </select>
+  <label class="inline"><input type="checkbox" name="inactive" value="1"{% if show_inactive %} checked{% endif %}> Show inactive</label>
+  <button type="submit">Filter</button>
+</form>
+
+<p class="muted small">{{ customers|length }} customer{{ customers|length|pluralize }}</p>
+<div class="table-wrap">
+<table class="list">
+  <thead><tr><th>Customer</th><th>Type</th><th>Price group</th><th>Terms</th><th class="num">Credit limit</th><th>Contact</th></tr></thead>
+  <tbody>
+    {% for c in customers %}
+    <tr{% if not c.is_active %} class="inactive"{% endif %}>
+      <td><a href="{{ c.get_absolute_url }}"><strong>{{ c.name }}</strong></a></td>
+      <td>{{ c.get_type_display }}</td>
+      <td>{% if c.price_group %}{{ c.price_group }}{% else %}<span class="error">Not set</span>{% endif %}</td>
+      <td>{{ c.terms_label }}</td>
+      <td class="num">{% if c.credit_limit %}{{ c.credit_limit|intcomma }}{% else %}<span class="muted">–</span>{% endif %}</td>
+      <td>{{ c.contact_person }}{% if c.phone %}{% if c.contact_person %}<br>{% endif %}<span class="muted small">{{ c.phone }}</span>{% endif %}</td>
+    </tr>
+    {% empty %}<tr><td colspan="6" class="muted">No customers found.</td></tr>{% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

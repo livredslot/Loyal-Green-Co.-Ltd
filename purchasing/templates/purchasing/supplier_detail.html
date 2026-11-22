@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ supplier.name }} · Loyal Green{% endblock %}
+{% block content %}
+<p class="small"><a href="{% url 'supplier_list' %}">← Suppliers</a></p>
+<div class="page-head">
+  <div>
+    <h1>{{ supplier.name }}{% if not supplier.is_active %} <span class="tag">Inactive</span>{% endif %}</h1>
+    <p class="lead">{{ supplier.country }} · pays in {{ supplier.get_currency_display }}</p>
+  </div>
+  <div class="actions">{% if perms.purchasing.change_supplier %}<a class="button" href="{% url 'supplier_edit' supplier.pk %}">Edit</a>{% endif %}</div>
+</div>
+<div class="grid-2">
+  <section class="card">
+    <h2>Supplies</h2>
+    <p>{{ supplier.supplies|default:"–" }}</p>
+    <dl class="facts">
+      <dt>Payment terms</dt><dd>{{ supplier.payment_terms|default:"–" }}</dd>
+      <dt>Payment method</dt><dd>{{ supplier.payment_method|default:"–" }}</dd>
+    </dl>
+  </section>
+  <section class="card">
+    <h2>Contact</h2>
+    <dl class="facts">
+      <dt>Contact</dt><dd>{{ supplier.contact_person|default:"–" }}</dd>
+      <dt>Phone</dt><dd>{{ supplier.phone|default:"–" }}</dd>
+      <dt>Email</dt><dd>{{ supplier.email|default:"–" }}</dd>
+      <dt>Address</dt><dd>{{ supplier.address|linebreaksbr|default:"–" }}</dd>
+    </dl>
+  </section>
+</div>
+{% if supplier.notes %}<section class="card"><h2>Notes</h2><p>{{ supplier.notes|linebreaksbr }}</p></section>{% endif %}
+<section class="card">
+  <h2>Change history</h2>
+  <ul class="plain small">{% for h in history %}<li>{{ h.history_date|date:"j M Y H:i" }} · {{ h.get_history_type_display }} by {{ h.history_user|default:"system" }}</li>{% endfor %}</ul>
+</section>
+{% endblock %}

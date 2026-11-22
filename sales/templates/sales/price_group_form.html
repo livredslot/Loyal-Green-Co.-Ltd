@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ group }} prices · Loyal Green{% endblock %}
+{% block content %}
+<p class="small"><a href="{% url 'price_list' %}">← Price list</a></p>
+<h1>{{ group }} prices</h1>
+<p class="muted">Price per packet in kyats, before 5% Commercial Tax. Change only the prices that change: the old price is kept as history and ends the day before the new date.</p>
+
+<form method="get" class="filters">
+  <select name="category">
+    <option value="">All categories</option>
+    {% for c in categories %}<option value="{{ c.pk }}"{% if c.pk|stringformat:"s" == category %} selected{% endif %}>{{ c.name }}</option>{% endfor %}
+  </select>
+  <button type="submit">Show</button>
+</form>
+
+<form method="post">
+  {% csrf_token %}
+  <div class="card form-grid">{% include "_field.html" with field=form.valid_from %}</div>
+  <div class="table-wrap">
+  <table class="list form-table">
+    <thead><tr><th>Item</th><th class="num">Pkt/ctn</th><th>Price per pkt</th></tr></thead>
+    <tbody>
+      {% for item, field in form.rows %}
+      {% ifchanged item.category %}<tr class="group-row"><td colspan="3">{{ item.category }}</td></tr>{% endifchanged %}
+      <tr>
+        <td>{{ item.code }} {{ item.name_en }}</td>
+        <td class="num">{{ item.pkt_per_ctn|default_if_none:"–" }}</td>
+        <td>{{ field }}{% for e in field.errors %}<small class="error">{{ e }}</small>{% endfor %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  <div class="form-actions"><button type="submit" class="primary">Save prices</button></div>
+</form>
+{% endblock %}
